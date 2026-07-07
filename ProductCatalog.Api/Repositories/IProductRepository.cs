@@ -4,8 +4,8 @@ namespace ProductCatalog.Api.Repositories
 {
     public interface IProductRepository
     {
-        Task<List<Product>> GetAllAsync();
-        Task<Product?> GetByIdAsync(int id);
-        Task InsertAsync(Product product);
+        Task<List<Product>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task InsertAsync(Product product, CancellationToken cancellationToken = default);
     }
 }
