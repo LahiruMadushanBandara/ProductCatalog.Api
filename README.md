@@ -6,6 +6,7 @@
 
 ## How to build and run
 
+If you are using command line/terminal navigate to project root folder before run commands.
 
 ### Step 1 - Create the database
 
@@ -13,9 +14,6 @@ I have put the database script "Script_ProductCatalogDb.sql" under DB folder. Ex
 
 sqlcmd -S localhost -E -i DB\Script_ProductCatalogDb.sql
 
-
-Running the script twice is fine, it only creates things if they
-are not there already.
 
 ### Step 2 - Connection string
 
@@ -29,6 +27,8 @@ set ConnectionStrings__Default=Server=localhost;Database=ProductCatalogDb;User I
 
 
 ### Step 3 - Build
+
+Click build button on Visual Studio OR if you are using terminal use following command.
 
 Command :
 dotnet build
