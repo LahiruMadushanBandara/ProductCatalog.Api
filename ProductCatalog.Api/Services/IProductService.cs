@@ -1,6 +1,6 @@
 ﻿namespace ProductCatalog.Api.Services
 {
-    public class ProductService : IProductService
+    public interface IProductService
     {
     }
 }
