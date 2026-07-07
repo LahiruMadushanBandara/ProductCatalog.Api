@@ -1,3 +1,4 @@
+using ProductCatalog.Api.Middlewares;
 using ProductCatalog.Api.Repositories;
 using ProductCatalog.Api.Services;
 
@@ -14,6 +15,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 
