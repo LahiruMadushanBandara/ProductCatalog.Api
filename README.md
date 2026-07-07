@@ -1,29 +1,18 @@
 # ProductCatalog.Api
 
+## Clone repository
+1. repository : https://github.com/LahiruMadushanBandara/ProductCatalog.Api.git
+2. Checkout master or dev Branch.
+
 ## How to build and run
 
-Run these from the repo root folder.
 
 ### Step 1 - Create the database
 
-I have put the database script "Script_ProductCatalogDb.sql". Execute it in your SQL server.
+I have put the database script "Script_ProductCatalogDb.sql" under DB folder. Execute it in your SQL server OR use following command.
 
-```
-sqlcmd -S localhost -E -i db\schema.sql
-```
+sqlcmd -S localhost -E -i DB\Script_ProductCatalogDb.sql
 
-If you are on SQL Express use `-S .\SQLEXPRESS` instead.
-If your server needs a username and password:
-
-```
-sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -i db\schema.sql
-```
-
-No SQL Server installed? You can start one with docker:
-
-```
-docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourStrong!Passw0rd" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
-```
 
 Running the script twice is fine, it only creates things if they
 are not there already.
@@ -34,31 +23,22 @@ The app reads the connection string from appsettings.json. By default
 it points to a local SQL Server with Windows login. If your setup is
 different, either edit that file or set it from the command line:
 
-```
-set ConnectionStrings__Default=Server=localhost;Database=ProductCatalogDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
-```
 
-(on Linux/Mac use export instead of set)
+Command :
+set ConnectionStrings__Default=Server=localhost;Database=ProductCatalogDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+
 
 ### Step 3 - Build
 
-```
+Command :
 dotnet build
-```
 
 ### Step 4 - Run
 
-```
+Click run btn on Visual studio OR Use following command
+Command :
 dotnet run --project ProductCatalog.Api
-```
+
 
 The console shows the URL. Open it in a browser and add /swagger at
-the end, for example http://localhost:5009/swagger. From there you can
-try the endpoints.
-
-If you want to make a release build and run that instead:
-
-```
-dotnet publish ProductCatalog.Api -c Release -o publish
-dotnet publish\ProductCatalog.ApiJson.dll
-```
+the end.
