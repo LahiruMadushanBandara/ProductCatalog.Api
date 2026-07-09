@@ -7,5 +7,6 @@ namespace ProductCatalog.Api.Repositories
         Task<List<Product>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
         Task InsertAsync(Product product, CancellationToken cancellationToken = default);
+        Task InsertManyAsync(IEnumerable<Product> products);
     }
 }

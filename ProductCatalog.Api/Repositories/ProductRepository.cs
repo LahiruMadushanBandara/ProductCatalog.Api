@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using ProductCatalog.Api.Models;
+using System.Text.Json;
+using System.Data;
 
 namespace ProductCatalog.Api.Repositories
 {
@@ -40,7 +42,7 @@ namespace ProductCatalog.Api.Repositories
             await using var conn = new SqlConnection(_connectionString);
             await using var cmd = new SqlCommand(sql, conn);
 
-            cmd.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = id;
+            cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
 
             await conn.OpenAsync(cancellationToken);
 
@@ -59,15 +61,41 @@ namespace ProductCatalog.Api.Repositories
             await using var conn = new SqlConnection(_connectionString);
             await using var cmd = new SqlCommand(sql, conn);
 
-            cmd.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = product.Id;
-            cmd.Parameters.Add("@Title", System.Data.SqlDbType.VarChar).Value = product.Title;
-            cmd.Parameters.Add("@Category", System.Data.SqlDbType.VarChar).Value = (object?)product.Category ?? DBNull.Value;
-            cmd.Parameters.Add("@Brand", System.Data.SqlDbType.VarChar).Value = (object?)product.Brand ?? DBNull.Value;
-            cmd.Parameters.Add("@Price", System.Data.SqlDbType.Decimal).Value = product.Price;
-            cmd.Parameters.Add("@Stock", System.Data.SqlDbType.Int).Value = product.Stock;
+            cmd.Parameters.Add("@Id", SqlDbType.Int).Value = product.Id;
+            cmd.Parameters.Add("@Title", SqlDbType.VarChar).Value = product.Title;
+            cmd.Parameters.Add("@Category", SqlDbType.VarChar).Value = (object?)product.Category ?? DBNull.Value;
+            cmd.Parameters.Add("@Brand", SqlDbType.VarChar).Value = (object?)product.Brand ?? DBNull.Value;
+            cmd.Parameters.Add("@Price", SqlDbType.Decimal).Value = product.Price;
+            cmd.Parameters.Add("@Stock", SqlDbType.Int).Value = product.Stock;
 
             await conn.OpenAsync(cancellationToken);
             await cmd.ExecuteNonQueryAsync(cancellationToken);
+        }
+
+
+        public async Task InsertManyAsync(IEnumerable<Product> products)
+        {
+            const string sql = @"
+            INSERT INTO dbo.Products (Id, Title, Category, Brand, Price, Stock)
+            SELECT j.Id, j.Title, j.Category, j.Brand, j.Price, j.Stock
+            FROM OPENJSON(@Json)
+            WITH (
+                Id       INT            '$.Id',
+                Title    NVARCHAR(300)  '$.Title',
+                Category NVARCHAR(100)  '$.Category',
+                Brand    NVARCHAR(150)  '$.Brand',
+                Price    DECIMAL(10,2)  '$.Price',
+                Stock    INT            '$.Stock'
+            ) AS j
+            WHERE NOT EXISTS (SELECT 1 FROM dbo.Products p WHERE p.Id = j.Id);";
+
+            var json = JsonSerializer.Serialize(products);
+
+            await using var conn = new SqlConnection(_connectionString);
+            await using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@Json", json);
+            await conn.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
         }
 
         private static Product Map(SqlDataReader r)

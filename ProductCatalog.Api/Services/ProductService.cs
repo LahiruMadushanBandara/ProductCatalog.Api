@@ -27,7 +27,12 @@ namespace ProductCatalog.Api.Services
                 return existing;
             }
             _logger.LogInformation("No products in database — list from DummyJSON");
-            return await _client.FetchAllAsync();
+            var fetched = await _client.FetchAllAsync();
+            if (fetched.Count == 0) return fetched;
+
+            //Save all
+            await _repo.InsertManyAsync(fetched);
+            return fetched;
         }
 
         public async Task<Product?> GetByIdAsync(int id)
