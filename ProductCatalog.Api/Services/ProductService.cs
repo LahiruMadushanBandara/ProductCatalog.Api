@@ -8,17 +8,27 @@ namespace ProductCatalog.Api.Services
     {
         private readonly IProductRepository _repo;
         private readonly IProductApiClient _client;
+        private readonly ILogger<ProductService> _logger;
 
-        public ProductService(IProductRepository repo, IProductApiClient client)
+
+        public ProductService(IProductRepository repo, IProductApiClient client, ILogger<ProductService> logger)
         {
             _repo = repo;
             _client = client;
+            _logger = logger;
         }
 
-        public Task<List<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync()
         {
-            return _repo.GetAllAsync();
-        } 
+            var existing = await _repo.GetAllAsync();
+            if (existing.Count > 0)
+            {
+                _logger.LogInformation("Product list from database");
+                return existing;
+            }
+            _logger.LogInformation("No products in database — list from DummyJSON");
+            return await _client.FetchAllAsync();
+        }
 
         public async Task<Product?> GetByIdAsync(int id)
         {
@@ -26,6 +36,7 @@ namespace ProductCatalog.Api.Services
             var existing = await _repo.GetByIdAsync(id);
             if (existing is not null)
             {
+                _logger.LogInformation("Product - {Id} is from database", id);
                 return existing;
             }
 
@@ -35,6 +46,8 @@ namespace ProductCatalog.Api.Services
 
             //Save
             await _repo.InsertAsync(fetched);
+            _logger.LogInformation("Product - {Id} is from DummyJson API - not available in Database", id);
+
             return fetched;
         }
     }
