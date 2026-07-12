@@ -25,6 +25,11 @@ namespace ProductCatalog.Api.Middlewares
                 await WriteError(context, StatusCodes.Status502BadGateway,
                     "The external data source is currently unavailable.");
             }
+            catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+            {
+                _logger.LogInformation("Request cancelled by the client.");
+                context.Response.StatusCode = 499;
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled exception");

@@ -14,21 +14,21 @@ namespace ProductCatalog.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
-            var result = await _service.GetAllAsync();
+            var result = await _service.GetAllAsync(cancellationToken);
             return Ok(result);
         }
 
 
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
         {
             if (id <= 0)
                 return BadRequest(new { message = "Id must be a positive integer." });
 
-            var product = await _service.GetByIdAsync(id);
+            var product = await _service.GetByIdAsync(id, cancellationToken);
             return product is null
                 ? NotFound(new { message = $"No product found with id {id}." })
                 : Ok(product);

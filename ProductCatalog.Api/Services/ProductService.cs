@@ -18,7 +18,7 @@ namespace ProductCatalog.Api.Services
             _logger = logger;
         }
 
-        public async Task<List<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync(CancellationToken cancellationToken)
         {
             var existing = await _repo.GetAllAsync();
             if (existing.Count > 0)
@@ -27,7 +27,7 @@ namespace ProductCatalog.Api.Services
                 return existing;
             }
             _logger.LogInformation("No products in database — list from DummyJSON");
-            var fetched = await _client.FetchAllAsync();
+            var fetched = await _client.FetchAllAsync(cancellationToken);
             if (fetched.Count == 0) return fetched;
 
             //Save all
@@ -35,7 +35,7 @@ namespace ProductCatalog.Api.Services
             return fetched;
         }
 
-        public async Task<Product?> GetByIdAsync(int id)
+        public async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             // check database first
             var existing = await _repo.GetByIdAsync(id);
@@ -46,7 +46,7 @@ namespace ProductCatalog.Api.Services
             }
 
             // fetch from the API
-            var fetched = await _client.FetchByIdAsync(id);
+            var fetched = await _client.FetchByIdAsync(id, cancellationToken);
             if (fetched is null) return null;
 
             //Save

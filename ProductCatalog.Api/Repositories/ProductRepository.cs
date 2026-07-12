@@ -93,7 +93,7 @@ namespace ProductCatalog.Api.Repositories
 
             await using var conn = new SqlConnection(_connectionString);
             await using var cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@Json", json);
+            cmd.Parameters.Add("@Json", SqlDbType.NVarChar).Value = json;
             await conn.OpenAsync();
             await cmd.ExecuteNonQueryAsync();
         }
